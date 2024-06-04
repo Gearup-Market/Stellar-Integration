@@ -7,8 +7,8 @@ We want to develop and deploy the Stellar Horizon API & SDK into the Gearup mark
 
 Once this is done, the Gearup marketplace will be able to interact with the Stellar network to perform the listed actions below:
 
-Create Stellar Wallet for each Gearup user
-Check/query XLM account balance of each user
-View transactions that occurs on each account
-Submit transaction to the blockchain
-Record and track users who engage in gear, course and/or studio rental, buy and sell activities
+* Create Stellar Wallet for each Gearup user
+* Check/query XLM account balance of each user
+* View transactions that occurs on each account
+* Submit transaction to the blockchain
+* Record and track users who engage in gear, course and/or studio rental, buy and sell activities
