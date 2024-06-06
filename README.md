@@ -2,13 +2,38 @@ Gearup is the peer-2-peer marketplace application that let Creators across Afric
 
 # Gearup Proof of Intent for SCF Application
 
-### What we are building on the Stellar Network
-We want to develop and deploy the Stellar Horizon API & SDK into the Gearup marketplace application that will let us accept payments, track and trace gear, studio and course movement from person to person. this will help us enhance transparency, trust, and efficiency, thereby improving user satisfaction and expanding Gearup market reach. This integration will also open new avenues for creators and non-creators to invest into gear rental business thereby driving growth in the audio-visual industry.
+## What we are building on the Stellar Network
+### Key Features:
+The following features will be implemented as a requirement for a successful integration of Stellar/Soroban in Gearup marketplace. Note that some of these features will not be implemented at the MVP stage. Please, see the roadmap for features that will be implemented in the MVP phase.
 
-Once this is done, the Gearup marketplace will be able to interact with the Stellar network to perform the listed actions below:
+### User Authentication and Wallet Integration: 
+* User authentication with credentials and jwt/oAuth.
+* Generate or connect existing Stellar wallets. 
+* Seamless interop between authentication via credentials and Stellar wallet and ensures smoother onboarding.
 
-* Create Stellar Wallet for each Gearup user
-* Check/query XLM account balance of each user
-* View transactions that occurs on each account
-* Submit transaction to the blockchain
-* Record and track users who engage in gear, course and/or studio rental, buy and sell activities
+### Soroban Smart contract:
+* Use smart contracts to automate rental/lease agreements, purchase contracts and swift dispute resolution.
+* Secure and transparent transaction handling due to the immutability of transactions on the Ledger.
+
+### Gear Tokenization:
+* Tokenization of gears/equipment on the Stellar network to ownership or rental rights.
+* Implement NFT-like tokens for unique items to track and manage ownership.
+* Transfer ownership based on purchase, rent or lease agreements.
+
+### Payments Integration:
+* Enable users make payment with Stellar Lumens (XLM) or a trusted stablecoin in the Stellar ecosystem.
+* Integrate FIAT on/off ramp for easy payment.
+* Paymaster: This will help users pay transaction fees on credit in cases where direct payment in XLM is not achievable for users.
+
+### Escrow System Integration: escrow system will be used to lock funds until both parties have fulfilled their contractual obligations and will be implemented in either of the following approaches; The exact approach will be decided during integration and upon careful analysis/testing.
+* Use claimable balances to implement token lockups.
+* Use Soroban smart contract to hold funds.
+
+### Rating/Reputation System:
+* Implement a rating/reputation system for users based on their activity, transaction history and rating/feedback from other users.
+* Store rating on the Ledger for transparency and immutability.
+
+### Notification & Monitoring:
+* Implement transaction notification system, alerts and logging for various activities in the application lifecycle.
+* Gather telemetry logs and general usage monitoring.
+* Email notification for rentals, contract expirations and invoices.
