@@ -15,6 +15,9 @@ export const {
 	LOG_FORMAT,
 	LOG_DIR,
 	ORIGIN,
+    CLOUDINARY_CLOUD_NAME,
+    CLOUDINARY_API_KEY,
+    CLOUDINARY_API_SECRET
 } = process.env;
 
 export const db = {

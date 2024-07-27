@@ -1,4 +1,6 @@
 /* eslint-disable prettier/prettier */
+import { generateToken, isTokenExpired, sanitize } from '@/shared/utils';
+/* eslint-disable prettier/prettier */
 import { User, UserId } from './types';
 import { HttpException } from '@/core/exceptions/HttpException';
 import userModel from './models/users';
@@ -6,11 +8,10 @@ import { isEmpty } from '@/core/utils/isEmpty';
 import { MissingResourceError } from '@/core/exceptions';
 import { Types } from 'mongoose';
 import jwt from 'jsonwebtoken';
-
-import crypto from 'crypto';
 import bcrypt from 'bcrypt';
 import { sendRestPasswordEmail, sendVerificationEmail } from '@/core/utils/email';
 import { logger } from '@/core/utils/logger';
+import { SECRET_KEY } from '@/core/config';
 
 class AuthService {
     private user = userModel;
@@ -39,21 +40,23 @@ class AuthService {
         if (isEmpty(name) || isEmpty(email) || isEmpty(password)) {
             throw new HttpException(400, 'All fields are required');
         }
+        const sanitizedEmail = sanitize(email)
 
-        const existingUser = await this.user.findOne({ email });
+        const existingUser = await this.user.findOne({ email: sanitizedEmail });
         if (existingUser) {
             throw new HttpException(409, `User with email ${email} already exists`);
         }
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        const verificationToken = crypto.randomBytes(32).toString('hex');
+        const { token: verificationToken, expiry: verificationTokenExpiry } = generateToken();
         const newUser = await this.user.create({
             userId: new Types.ObjectId().toString(),
             name: name,
-            email: email,
+            email: sanitizedEmail,
             password: hashedPassword,
             isVerified: false,
             verificationToken: verificationToken,
+            verificationTokenExpiry: verificationTokenExpiry,
 
         });
 
@@ -66,8 +69,9 @@ class AuthService {
         if (isEmpty(email) || isEmpty(password)) {
             throw new HttpException(400, 'Email and password are required');
         }
+        const sanitizedEmail = sanitize(email)
 
-        const user = await this.user.findOne({ email });
+        const user = await this.user.findOne({ email: sanitizedEmail });
         if (!user) {
             throw new HttpException(401, 'Invalid email or password');
         }
@@ -81,7 +85,7 @@ class AuthService {
         //     throw new HttpException(403, 'Please verify your email before logging in');
         // }
 
-        const token = jwt.sign({ userId: user.userId }, process.env.SECRET_KEY, { expiresIn: '1h' });
+        const token = jwt.sign({ userId: user.userId }, SECRET_KEY, { expiresIn: '1h' });
 
         return { token, user };
     }
@@ -110,14 +114,16 @@ class AuthService {
             throw new HttpException(400, 'Email is required');
         }
 
-        const user = await this.user.findOne({ email });
+        const sanitizedEmail = sanitize(email)
+
+        const user = await this.user.findOne({ emai: sanitizedEmail });
         if (!user) {
             throw new HttpException(404, `User with email ${email} does not exist`);
         }
 
-        const resetToken = Math.floor(100000 + Math.random() * 900000).toString(); // Generate a 6-digit token
+        const { token: resetToken, expiry: resetTokenExpiry } = generateToken();
         user.resetPasswordToken = resetToken;
-        user.resetPasswordTokenExpiry = new Date(Date.now() + 3600000)
+        user.resetPasswordTokenExpiry = resetTokenExpiry;
         user.save()
         await sendRestPasswordEmail(email, resetToken);
         logger.info(user.resetPasswordToken)
@@ -128,8 +134,10 @@ class AuthService {
         if (isEmpty(email) || isEmpty(token)) {
             throw new HttpException(400, 'Email and token are required');
         }
+        const sanitizedEmail = sanitize(email)
 
-        const user = await this.user.findOne({ email });
+
+        const user = await this.user.findOne({ email: sanitizedEmail });
 
         if (!user) {
             throw new HttpException(404, `User with email ${email} does not exist`);
@@ -140,19 +148,18 @@ class AuthService {
             throw new HttpException(400, 'Invalid token');
         }
 
-        const tokenExpiry = user.resetPasswordTokenExpiry;
-        const currentTime = new Date();
-
-        if (currentTime > tokenExpiry) {
+        if (isTokenExpired(user.resetPasswordTokenExpiry)) {
             throw new HttpException(400, 'Token has expired');
         }
+
     }
 
 
     public async resetPassword(email: string, token: string, newPassword: string): Promise<void> {
         await this.verifyResetToken(email, token);
+        const sanitizedEmail = sanitize(email)
 
-        const user = await this.user.findOne({ email });
+        const user = await this.user.findOne({ email: sanitizedEmail });
 
         if (!user) {
             throw new HttpException(404, `User with email ${email} does not exist`);

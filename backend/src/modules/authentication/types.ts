@@ -12,6 +12,7 @@ export type User = {
     resetPasswordToken?: string;
     resetPasswordTokenExpiry?: Date;
     verificationToken?: string;
+    verificationTokenExpiry?: Date;
     createdAt?: Date;
     updatedAt?: Date;
 };

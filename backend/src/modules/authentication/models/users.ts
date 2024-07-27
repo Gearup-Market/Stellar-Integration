@@ -13,6 +13,7 @@ const userSchema: Schema = new Schema<User>({
     token: { type: Schema.Types.String },
     resetPasswordToken: { type: Schema.Types.String, default: '' },
     resetPasswordTokenExpiry: { type: Schema.Types.Date, default: Date.now },
+    verificationTokenExpiry: { type: Schema.Types.Date },
     createdAt: { type: Schema.Types.Date, default: Date.now() },
     updatedAt: { type: Schema.Types.Date },
 });
